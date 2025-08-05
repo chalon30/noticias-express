@@ -1,12 +1,21 @@
-'use client';
+"use client";
 
-import { NewsArticle } from '@/types/news';
-import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { NewsArticle } from "@/types/news";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface NewsListProps {
   articles: NewsArticle[];
 }
+
+// Función para detectar dominios problemáticos que bloquean optimización
+const isBlockedDomain = (url: string) => {
+  const blockedDomains = [
+    "i-invdn-com.investing.com",
+    // puedes agregar más dominios si es necesario
+  ];
+  return blockedDomains.some((domain) => url.includes(domain));
+};
 
 export default function NewsList({ articles }: NewsListProps) {
   return (
@@ -26,11 +35,13 @@ export default function NewsList({ articles }: NewsListProps) {
               <div className="relative w-full h-48">
                 <Image
                   src={article.image_url}
-                  alt={article.title || 'Imagen de noticia'}
+                  alt={article.title || "Imagen de noticia"}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover"
-                  loading="lazy"
+                  priority={index < 3}
+                  loading={index < 3 ? undefined : "lazy"}
+                  unoptimized={isBlockedDomain(article.image_url)}
                 />
               </div>
             ) : (
@@ -46,10 +57,10 @@ export default function NewsList({ articles }: NewsListProps) {
 
               {article.pubDate && (
                 <p className="text-xs text-gray-500 mb-2">
-                  {new Date(article.pubDate).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
+                  {new Date(article.pubDate).toLocaleDateString("es-ES", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
                   })}
                 </p>
               )}
