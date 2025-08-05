@@ -6,4 +6,4 @@ export interface NewsArticle {
   pubDate?: string;
   source_id?: string;
   image_url?: string;
-}
+} 
