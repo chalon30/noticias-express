@@ -1,5 +1,4 @@
 const API_KEY = process.env.NEXT_PUBLIC_NEWSDATA_API_KEY;
-
 const BASE_URL = 'https://newsdata.io/api/1/news';
 
 export interface NewsArticle {
@@ -11,11 +10,22 @@ export interface NewsArticle {
   image_url?: string;
 }
 
-export const fetchNews = async (query: string = 'technology'): Promise<NewsArticle[]> => {
+export const fetchNews = async (
+  category = ''
+): Promise<NewsArticle[]> => {
   try {
     if (!API_KEY) throw new Error('API key no definida en el entorno');
 
-    const url = `${BASE_URL}?apikey=${API_KEY}&q=${query}&language=es`;
+    const params = new URLSearchParams({
+      apikey: API_KEY,
+      language: 'es',
+    });
+
+    // Solo agregar filtros si se especifican
+    if (category) params.append('category', category);
+
+    const url = `${BASE_URL}?${params.toString()}`;
+
     const res = await fetch(url);
 
     if (!res.ok) {
@@ -30,4 +40,3 @@ export const fetchNews = async (query: string = 'technology'): Promise<NewsArtic
     return [];
   }
 };
-
